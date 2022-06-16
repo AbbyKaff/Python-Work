@@ -25,4 +25,4 @@ class Solution:
                 return False
             left = left.next
             right = right.next
-            return True
+         return True

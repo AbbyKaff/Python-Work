@@ -392,7 +392,7 @@ if __name__ == '__main__':
        # df_all = pd.concat([df_all, df], axis=0)
         #print(len(df.index))
         #rint(len(df_all.index))
-    os.chdir(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\pay_hist\all quarters')
+    os.chdir(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\pay_hist\Q3 catch up')
 
     extension = 'csv'
     all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
@@ -441,6 +441,7 @@ if __name__ == '__main__':
     
     df_all['Source System'] = 'Kronos'
     df_all['Quarter'] = pd.PeriodIndex(df_all['Pay Date'], freq='Q')
+    #df_all = df_all[df_all['Quarter'] == '2023Q2']
     
     dict_company = {'KBP Foods': 'FQ',
                     'KBP Bells': 'TB',
@@ -877,13 +878,13 @@ def set_state_tax_authority_er(df):
         & (df['Tax Type'].isin(['FLI','SDI','WC','SUTA']))
     ), 'Deduction Code'] = df['WD ER Code'].str[:7]
     
-    df.loc[(df['Record Type'].str.startswith('Tax', na=False)
-        & (df['E/D/T Code'] == 'SUTA_SC:ME')
-    ), 'Deduction Code'] = 'W_SUIER'
+    #df.loc[(df['Record Type'].str.startswith('Tax', na=False)
+       # & (df['E/D/T Code'] == 'SUTA_SC:ME')
+    #), 'Deduction Code'] = 'W_SUIER'
     
-    df.loc[(df['Record Type'].str.startswith('Tax', na=False)
-        & (df['E/D/T Code'] == 'SUTA_SC:ME')
-    ), 'Payroll State Tax Authority'] = '23'
+    #df.loc[(df['Record Type'].str.startswith('Tax', na=False)
+     #   & (df['E/D/T Code'] == 'SUTA_SC:ME')
+    #), 'Payroll State Tax Authority'] = '23'
 
     return df
 
@@ -1212,30 +1213,95 @@ if __name__ == '__main__':
     df_final['Payroll State Tax Authority'] = df_final['Payroll State Tax Authority'].astype(str).str.zfill(2)
     df_final.loc[df_final['Payroll State Tax Authority'] == '00', 'Payroll State Tax Authority'] = ''
 
-    #df_final['Period End Date'] = np.where((df_final['Pay Group'] == 'USA_Bi-Weekly') & (df_final['Quarter'] == 'Q1'),'31-MAR-2023',
-                                         #  np.where((df_final['Pay Group'] == 'USA_Bi-Weekly') & (df_final['Quarter'] == 'Q2'),'30-JUN-2023',
-                                          # np.where((df_final['Pay Group'] == 'USA_Weekly') & (df_final['Quarter'] == 'Q1'), '31-MAR-2023',
-                                          # np.where((df_final['Pay Group'] == 'USA_Weekly') & (df_final['Quarter'] == 'Q2'), '30-JUN-2023',
-                                         #  np.where((df_final['Pay Group'] == 'USA_TB_Bi-Weekly') & (df_final['Quarter'] == 'Q1') ,'25-JUL-2023',
-                                          # np.where((df_final['Pay Group'] == 'USA_TB_Bi-Weekly') & (df_final['Quarter'] == 'Q1') ,'25-JUL-2023','25-JUL-2023'))))))
+    df_final['Period End Date'] = np.where((df_final['Pay Group'] == 'USA_Bi-Weekly') & (df_final['Quarter'] == 'Q1'),'31-MAR-2023',
+                                           np.where((df_final['Pay Group'] == 'USA_Bi-Weekly') & (df_final['Quarter'] == 'Q2'),'30-JUN-2023',
+                                           np.where((df_final['Pay Group'] == 'USA_Weekly') & (df_final['Quarter'] == 'Q1'), '31-MAR-2023',
+                                           np.where((df_final['Pay Group'] == 'USA_Weekly') & (df_final['Quarter'] == 'Q2'), '30-JUN-2023',
+                                           np.where((df_final['Pay Group'] == 'USA_TB_Bi-Weekly') & (df_final['Quarter'] == 'Q1') ,'25-JUL-2023',
+                                           np.where((df_final['Pay Group'] == 'USA_TB_Bi-Weekly') & (df_final['Quarter'] == 'Q1') ,'25-JUL-2023','25-JUL-2023'))))))
     
-    df_final['Period End Date'] = np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'20-MAR-2023', 
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'21-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Weekly'),'20-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'21-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'12-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'13-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Weekly'),'26-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'27-JUN-2023','NA'))))))))
+    df_final['Period End Date'] = np.where((df_final['Quarter'] == '2023Q3') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'18-SEP-2023', 
+        np.where((df_final['Quarter'] == '2023Q3') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'19-SEP-2023',
+        np.where((df_final['Quarter'] == '2023Q3') & (df_final['Pay Group'] == 'USA_Weekly'),'18-SEP-2023',
+        np.where((df_final['Quarter'] == '2023Q3') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'19-SEP-2023','NA'))))
+                 
+    df_final['Payment Date'] = np.where(df_final['Quarter'] == '2023Q1','27-MAR-2023',
+                                        np.where(df_final['Quarter'] == '2023Q2','19-JUN-2023',
+                                                 np.where(df_final['Quarter'] == '2023Q3','25-SEP-2023','NA')))
     
-    df_final['Payment Date'] = np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'27-MAR-2023', 
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'27-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Weekly'),'27-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'27-MAR-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'16-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'16-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Weekly'),'30-JUN-2023',
-        np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'30-JUN-2023','NA'))))))))
+    df_final['Period End Date'] = np.where(df_final['Company'] == 'TB','14-JUN-2023','13-JUN-2023')
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'12-JUN-2023',
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'13-JUN-2023',
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Weekly'),'26-JUN-2023',
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'27-JUN-2023','NA'))))))))
+    
+    #df_final['Payment Date'] = '25-SEP-2023'
+    
+    
+    #ADD CORRECT TAX
+    
+    #Q1
+    df_final = df_final[df_final['Quarter'] == '2023Q2']
+    
+    tax_match = pd.read_csv(r"C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\twd_catchup_q3.csv")
+    
+    tax_match = modify_amount(tax_match, 'PST Record Amount (ER)')
+    tax_match['Match'] = tax_match['Employee Id'].astype(str) + tax_match['ER Code'] + tax_match['PST Record Amount (ER)'].astype(str)
+        
+    df_final['Match'] = df_final['Employee ID'].astype(str) + df_final['Deduction Code'] + df_final['Payroll State Tax Authority'] + df_final['Payroll Local County Tax Authority Code'] + df_final['Payroll Local City Tax Authority Code'] + df_final['Payroll Local Home School District Tax Authority Code'] + df_final['Payroll Local Other Tax Authority Code']+ df_final['Amount'].astype(str)
+    
+    test_final = df_final.merge(tax_match, on='Match',how='left')
+    #test_final.to_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history_Q1validate.xlsx',index=False)
+    
+    test_match = tax_match.merge(df_final, on='Match', how='left')
+    test_match.to_csv(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\tax_matchval_q3.csv')
+    
+    test_final.to_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history_Q3_CU_validate.xlsx',index=False)
+
+
+    ###############################################
+    #q3
+
+    tax_match = pd.read_csv(r"C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\twd2.csv")
+    
+    tax_match = modify_amount(tax_match, 'PST Record Amount')
+    tax_match['Match'] = tax_match['Employee Id'].astype(str) + tax_match['Deduction Code'] + tax_match['PST Record Amount'].astype(str)
+    
+    
+
+    
+    df_final['Match'] = df_final['Employee ID'].astype(str) + df_final['Deduction Code'] + df_final['Payroll State Tax Authority'] + df_final['Payroll Local County Tax Authority Code'] + df_final['Payroll Local City Tax Authority Code'] + df_final['Payroll Local Home School District Tax Authority Code'] + df_final['Payroll Local Other Tax Authority Code']+ df_final['Amount'].astype(str)
+    
+    test_final = df_final.merge(tax_match, on='Match',how='left')
+    test_final.to_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history_Q3_validate.xlsx',index=False)
+    
+    test_match = tax_match.merge(df_final, on='Match', how='left')
+    test_match.to_csv(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\tax_matchval.csv')
+    
+    df_final = pd.read_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history_Q1_validate.xlsx')
+    
+    df_final.loc[df_final['Payroll State Tax Authority'].isna(), 'Payroll State Tax Authority'] = 0 
+    df_final['Payroll State Tax Authority'] = df_final['Payroll State Tax Authority'].astype(float)
+    df_final['Payroll State Tax Authority'] = df_final['Payroll State Tax Authority'].astype(int)
+    df_final['Payroll State Tax Authority'] = df_final['Payroll State Tax Authority'].astype(str).str.zfill(2)
+    df_final.loc[df_final['Payroll State Tax Authority'] == '00', 'Payroll State Tax Authority'] = ''
+
+    
+    #df_final = modify_amount(df_final,'Taxable Wages')
+    #df_final = modify_amount(df_final,'Subject Wages')
+    #df_final = modify_amount(df_final,'Gross Wages')
+    
+    
+        #np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'27-MAR-2023', 
+        #np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'27-MAR-2023',
+        #np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_Weekly'),'27-MAR-2023',
+        #np.where((df_final['Quarter'] == '2023Q1') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'27-MAR-2023','NA'))))
+                 
+                 
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Bi-Weekly'),'16-JUN-2023',
+        ##np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Bi-Weekly'),'16-JUN-2023',
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_Weekly'),'30-JUN-2023',
+        #np.where((df_final['Quarter'] == '2023Q2') & (df_final['Pay Group'] == 'USA_TB_Weekly'),'30-JUN-2023','NA'))))))))
     
     
     #df_final['Payment Date'] = np.where(df_final['Quarter'] == '2023Q1','31-MAR-2023','30-JUN-2023')
@@ -1261,12 +1327,12 @@ if __name__ == '__main__':
                      'Appropriation', 'Related Calculation ID',
                      'Related Calc Input Value']]
     
-    #df_final.to_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history.xlsx',index=False)
+    df_final.to_excel(r'C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\files\payroll_history_Q1.xlsx',index=False)
     
     
     
-    
-    write_to_csv(df, 'payroll_history_0826232.txt')
+    df_final['Employee ID'] = df_final['Employee ID'].astype(int)
+    write_to_csv(df_final, 'payroll_history_Q3.txt')
 
-    df = pd.read_csv(r"C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\PROD_payroll_history_082523.csv")
+    df = pd.read_csv(r"C:\Users\akaff\OneDrive - KBP Investments\Workday Implentation\Data Conversion\data files\PROD_payroll_history_Q3.csv")
     

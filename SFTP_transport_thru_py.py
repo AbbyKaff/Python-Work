@@ -42,7 +42,7 @@ adp.to_csv('./kbpfoods1_ATM_P_'+date+'.csv',index=False)
 nphost = "sdgcl.adp.com"
 npport = 22
 npusr = "kbpfoods1acct"
-nppwd = "Ab4g6qZx3Vg%sftp2020"
+
 
 
 def openstransport():
